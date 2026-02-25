@@ -1,0 +1,59 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:          # allow manual re-runs from the Actions tab
+
+# Grant the workflow the scopes needed to publish to Pages
+permissions:
+  contents: read
+  pages:    write
+  id-token: write
+
+# Only one concurrent deployment; let in-progress runs finish
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  # ── Build ──────────────────────────────────────────────────────────────────
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build (Vite)
+        run: npm run build
+        env:
+          NODE_ENV: production    # ensures base='/basecamp/' in vite.config.js
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist              # Vite output directory
+
+  # ── Deploy ─────────────────────────────────────────────────────────────────
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

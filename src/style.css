@@ -1,0 +1,150 @@
+/* ── Reset ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000814;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ── Full-bleed canvas ────────────────────────────────────────────────────── */
+#canvas {
+  display: block;
+  width:  100vw;
+  height: 100vh;
+  touch-action: none; /* prevent browser scroll/zoom hijacking WebGL input */
+}
+
+/* ── Loading overlay ─────────────────────────────────────────────────────── */
+#loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000814;
+  color: #ccd6ff;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  z-index: 100;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.loading-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loading-spinner {
+  width:  36px;
+  height: 36px;
+  border: 3px solid rgba(255,255,255,0.15);
+  border-top-color: #7b61ff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── lil-gui theming — accessible, dark, high-contrast text ─────────────── */
+.lil-gui {
+  --background-color:        rgba(4, 8, 30, 0.90);
+  --title-background-color:  rgba(10, 15, 50, 0.95);
+  --text-color:              #d8e0ff;
+  --title-text-color:        #ffffff;
+  --widget-color:            #1e244a;
+  --highlight-color:         #2d3878;
+  --focus-color:             #5b6cff;        /* visible keyboard focus ring */
+  --hover-color:             #2a3260;
+  --number-color:            #82b1ff;
+  --string-color:            #80ffbb;
+  --font-size:               13px;
+  --input-font-size:         12px;
+  --font-family:             system-ui, sans-serif;
+  --slider-knob-width:       3px;
+  --checkbox-size:           14px;
+  --scrollbar-width:         5px;
+
+  max-height: 92vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Keyboard focus indicator — meets WCAG AA */
+.lil-gui .controller:focus-within {
+  outline: 2px solid var(--focus-color);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* Hint text at bottom of panel */
+.gui-hint {
+  padding: 8px 10px 6px;
+  font-size: 10px;
+  color: rgba(180, 190, 255, 0.55);
+  line-height: 1.5;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  text-align: center;
+}
+
+/* ── Responsive breakpoints ─────────────────────────────────────────────── */
+
+/* Tablet (≤ 900 px): slightly narrower panel */
+@media (max-width: 900px) {
+  .lil-gui.root {
+    --width: 240px;
+  }
+}
+
+/* Mobile (≤ 767 px): dock to bottom, full width, collapsible */
+@media (max-width: 767px) {
+  .lil-gui.root {
+    position: fixed !important;
+    top:    auto !important;
+    right:  0    !important;
+    bottom: 0    !important;
+    left:   0    !important;
+    width:  100% !important;
+    --width: 100%;
+    max-height: 55vh;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.6);
+  }
+
+  .lil-gui.root > .title {
+    padding: 10px 16px;
+    font-size: 14px;
+    /* drag handle affordance */
+    background: linear-gradient(
+      to bottom,
+      rgba(30, 35, 80, 0.98),
+      rgba(10, 15, 50, 0.95)
+    );
+  }
+
+  /* Add a visual handle bar above the title on mobile */
+  .lil-gui.root > .title::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.25);
+    margin: 0 auto 8px;
+  }
+
+  .gui-hint { display: none; }
+}
+
+/* Very small screens (≤ 400 px) */
+@media (max-width: 400px) {
+  .lil-gui {
+    --font-size: 11px;
+    --input-font-size: 10px;
+  }
+}

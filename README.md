@@ -6,7 +6,9 @@ A tiny sandbox repo for agent-driven coding.
 
 Run the hello world script:
 
-
+```bash
+python3 hello.py
+```
 
 ## Notes
 
